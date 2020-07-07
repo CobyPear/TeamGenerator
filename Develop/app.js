@@ -5,10 +5,14 @@ const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
 
+
 const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
+
+const team = [];
+const teamIds = [];
 
 
 // Write code to use inquirer to gather information about the development team members,
@@ -33,3 +37,188 @@ const render = require("./lib/htmlRenderer");
 // for further information. Be sure to test out each class and verify it generates an
 // object with the correct structure and methods. This structure will be crucial in order
 // for the provided `render` function to work! ```
+
+function createManager() {
+
+    console.log("Who is the manager of this team?")
+
+    inquirer
+    .prompt([{
+        type: "input",
+        name: "name",
+        message: "What is the team member's name?",
+        validate: answer => {
+            if (answer !== ""){
+                return true;
+            };
+            return "Please enter a valid name"
+        }
+    },
+    {
+        type: "input",
+        name: "id",
+        message: "What is the team member's ID?",
+        validate: answer => {
+            if (teamIds.includes(answer)){
+                return "That ID is already taken, Please enter a unique ID"
+            } else {
+                return true;
+            }
+        }
+    },
+    {
+        type: "input",
+        name: "email",
+        message: "What is the team member's email address?"
+    }, 
+    {
+        type: "input",
+        name: "officeNumber",
+        message: "What is the manager's office number?"
+    }])
+    .then(response => {
+        const manager = new Manager(response.name, response.id, response.email, response.officeNumber);
+        team.push(manager);
+        teamIds.push(response.id)
+        createTeamMember();
+        // console.log(manager)
+    })
+    
+}
+
+createManager()
+
+function createTeamMember() {
+
+    console.log("Let's add some members to the team!")
+
+    inquirer
+    .prompt(
+        {
+            type: "list",
+            name: "role",
+            message: "What's the role of this team member?",
+            choices: [
+                "Engineer",
+                "Intern",
+                "I'm done adding team members"
+            ]
+
+        }
+    ).then(response => {
+        switch(response.role) {
+            case "Engineer":
+                createEngineer();
+                break;
+            case "Intern":
+                createIntern();
+                break;
+            default:
+                renderHtml();
+        };
+    });
+};
+
+function createEngineer() {
+
+    inquirer
+    .prompt([
+        {
+            type: "input",
+            name: "name",
+            message: "What is the team member's name?",
+            validate: answer => {
+                if (answer !== ""){
+                    return true;
+                };
+                return "Please enter a valid name"
+            }
+        },
+        {
+            type: "input",
+            name: "id",
+            message: "What is the team member's ID?",
+            validate: answer => {
+                if (teamIds.includes(answer)){
+                    return "That ID is already taken, Please enter a unique ID"
+                } else {
+                    return true;
+                }
+            }
+        },
+        {
+            type: "input",
+            name: "email",
+            message: "What is the team member's email address?"
+        }, 
+        {
+            type: "input",
+            name: "github",
+            message: "What is the engineer's GitHub username?"
+        }
+    ]).then(response => {
+        const engineer = new Engineer(response.name, response.id, response.email, response.github);
+        team.push(engineer);
+        createTeamMember();
+        // console.log(manager)
+    })
+
+}
+
+function createIntern() {
+
+    inquirer
+    .prompt([
+        {
+            type: "input",
+            name: "name",
+            message: "What is the team member's name?",
+            validate: answer => {
+                if (answer !== ""){
+                    return true;
+                };
+                return "Please enter a valid name"
+            }
+        },
+        {
+            type: "input",
+            name: "id",
+            message: "What is the team member's ID?",
+            validate: answer => {
+                if (teamIds.includes(answer)){
+                    return "That ID is already taken, Please enter a unique ID"
+                } else {
+                    return true;
+                }
+            }
+        },
+        {
+            type: "input",
+            name: "email",
+            message: "What is the team member's email address?"
+        }, 
+        {
+            type: "input",
+            name: "school",
+            message: "What is the team member's school?"
+        }
+    ]).then(response => {
+        const intern = new Intern(response.name, response.id, response.email, response.school);
+        team.push(intern);
+        createTeamMember();
+    })
+
+}
+
+function renderHtml() {
+
+    if (!fs.existsSync(OUTPUT_DIR)) {
+        fs.mkdirSync(OUTPUT_DIR)
+      }
+
+    fs.writeFile(outputPath, render(team), (err) => {
+        if (err) throw err
+
+        })
+
+}
