@@ -86,7 +86,6 @@ function createManager() {
     
 }
 
-createManager()
 
 function createTeamMember() {
 
@@ -97,7 +96,7 @@ function createTeamMember() {
         {
             type: "list",
             name: "role",
-            message: "What's the role of this team member?",
+            message: "What is this team member's role?",
             choices: [
                 "Engineer",
                 "Intern",
@@ -160,7 +159,6 @@ function createEngineer() {
         const engineer = new Engineer(response.name, response.id, response.email, response.github);
         team.push(engineer);
         createTeamMember();
-        // console.log(manager)
     })
 
 }
@@ -206,9 +204,9 @@ function createIntern() {
         const intern = new Intern(response.name, response.id, response.email, response.school);
         team.push(intern);
         createTeamMember();
-    })
+    });
 
-}
+};
 
 function renderHtml() {
 
@@ -219,6 +217,8 @@ function renderHtml() {
     fs.writeFile(outputPath, render(team), (err) => {
         if (err) throw err
 
-        })
+        });
 
-}
+};
+
+createManager();
